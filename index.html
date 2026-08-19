@@ -1,133 +1,351 @@
-Code With Rey <!doctype html>
+Code With Rey
+<!doctype html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Binary Blitz</title>
 	<style>
-		:root { color-scheme: dark; }
-		body { margin: 0; min-height: 100vh; display: grid; place-items: center;
-			font-family: system-ui, sans-serif; background: #101827; color: #e8eefc; }
-		main { width: min(94vw, 900px); padding: 2rem; text-align: center;
-			background: #19263b; border: 1px solid #334766; border-radius: 18px;
-			box-shadow: 0 18px 50px #0006; }
-		h1 { margin-top: 0; color: #7ee787; }
-		.stats { display: flex; justify-content: space-around; gap: 1rem; margin: 1rem 0 2rem; }
-		.stat { padding: .7rem 1rem; background: #101827; border-radius: 10px; flex: 1; }
-		.stat strong { display: block; font-size: 1.5rem; color: #ffd866; }
-		#question { font-size: 1.35rem; margin: 1.5rem 0 .6rem; }
-		#worksheet { overflow-x: auto; margin: 1.5rem auto; }
-		#positions, #entry-row { display: grid; grid-template-columns: repeat(8, minmax(45px, 1fr)) 110px; gap: .35rem; min-width: 560px; }
-		.position { padding: .5rem .2rem; background: #101827; border-radius: 7px; }
-		.position label { display: block; color: #ffd866; font: bold .9rem ui-monospace, monospace; }
-		.bit, #decimal { width: 100%; margin: .35rem 0 0; padding: .55rem 0; text-align: center; font: bold 1.35rem ui-monospace, monospace; }
-		.bit { cursor: pointer; border: 2px solid #ffd866; border-radius: 7px; background: #0c1422; color: #ffd866; }
-		.bit.on { background: #7ee787; color: #102018; }
-		.bit.locked { cursor: default; border-color: #52698e; opacity: .75; }
-		#decimal { box-sizing: border-box; width: 110px; margin: 0; padding: .75rem .4rem; }
-		#decimal[readonly], .bit[readonly] { border-color: #52698e; opacity: .75; }
-		#decimal:not([readonly]), .bit:not([readonly]) { border-color: #ffd866; }
-		.decimal-label { align-self: center; color: #aab8d2; font-size: .85rem; }
-		input { box-sizing: border-box; width: min(100%, 360px); padding: .9rem; margin: 1rem 0;
-			font-size: 1.15rem; border: 2px solid #52698e; border-radius: 9px; background: #0c1422; color: white; }
-		button { cursor: pointer; border: 0; border-radius: 9px; padding: .8rem 1.3rem;
-			margin: .25rem; font-weight: 700; font-size: 1rem; background: #7ee787; color: #102018; }
-		button.secondary { background: #52698e; color: white; }
-		#message { min-height: 1.5rem; font-weight: 600; }
-		.hint { color: #aab8d2; font-size: .9rem; }
+		:root {
+			color-scheme: dark;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			display: grid;
+			place-items: center;
+			padding: 1rem;
+			font-family: system-ui, sans-serif;
+			background: #101827;
+			color: #e8eefc;
+		}
+
+		main {
+			width: min(100%, 900px);
+			box-sizing: border-box;
+			padding: clamp(1rem, 4vw, 2rem);
+			text-align: center;
+			background: #19263b;
+			border: 1px solid #334766;
+			border-radius: 18px;
+			box-shadow: 0 18px 50px #0006;
+		}
+
+		h1 {
+			margin-top: 0;
+			color: #7ee787;
+		}
+
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			gap: .6rem;
+			margin: 1rem 0 2rem;
+		}
+
+		.stat {
+			padding: .7rem 1rem;
+			background: #101827;
+			border-radius: 10px;
+			flex: 1;
+		}
+
+		.stat strong {
+			display: block;
+			font-size: 1.5rem;
+			color: #ffd866;
+		}
+
+		#question {
+			font-size: 1.35rem;
+			margin: 1.5rem 0 .6rem;
+		}
+
+		#worksheet {
+			margin: 1.5rem auto;
+		}
+
+		#positions {
+			display: grid;
+			grid-template-columns: repeat(8, minmax(0, 1fr));
+			gap: .35rem;
+		}
+
+		#entry-row {
+			display: flex;
+			justify-content: center;
+			margin-top: .7rem;
+		}
+
+		.position {
+			padding: .5rem .2rem;
+			background: #101827;
+			border-radius: 7px;
+		}
+
+		.position label {
+			display: block;
+			color: #ffd866;
+			font: bold .9rem ui-monospace, monospace;
+		}
+
+		.bit,
+		#decimal {
+			width: 100%;
+			margin: .35rem 0 0;
+			padding: .55rem 0;
+			text-align: center;
+			font: bold 1.35rem ui-monospace, monospace;
+		}
+
+		.bit {
+			cursor: pointer;
+			border: 2px solid #ffd866;
+			border-radius: 7px;
+			background: #0c1422;
+			color: #ffd866;
+		}
+
+		.bit.on {
+			background: #7ee787;
+			color: #102018;
+		}
+
+		.bit.locked {
+			cursor: default;
+			border-color: #52698e;
+			opacity: .75;
+		}
+
+		#decimal {
+			box-sizing: border-box;
+			width: min(110px, 30vw);
+			margin: 0;
+			padding: .75rem .4rem;
+		}
+
+		#decimal[readonly],
+		.bit[readonly] {
+			border-color: #52698e;
+			opacity: .75;
+		}
+
+		#decimal:not([readonly]),
+		.bit:not([readonly]) {
+			border-color: #ffd866;
+		}
+
+		.decimal-label {
+			align-self: center;
+			color: #aab8d2;
+			font-size: .85rem;
+		}
+
+		input {
+			box-sizing: border-box;
+			width: min(100%, 360px);
+			padding: .9rem;
+			margin: 1rem 0;
+			font-size: 1.15rem;
+			border: 2px solid #52698e;
+			border-radius: 9px;
+			background: #0c1422;
+			color: white;
+		}
+
+		button {
+			cursor: pointer;
+			border: 0;
+			border-radius: 9px;
+			padding: .8rem 1.3rem;
+			margin: .25rem;
+			font-weight: 700;
+			font-size: 1rem;
+			background: #7ee787;
+			color: #102018;
+		}
+
+		button.secondary {
+			background: #52698e;
+			color: white;
+		}
+
+		#message {
+			min-height: 1.5rem;
+			font-weight: 600;
+		}
+
+		.hint {
+			color: #aab8d2;
+			font-size: .9rem;
+		}
+
+		#game {
+			transition: opacity .2s ease;
+		}
+
+		#game.preview {
+			opacity: .45;
+			pointer-events: none;
+		}
+
+		#preview {
+			margin: 1.5rem auto 0;
+			max-width: 420px;
+		}
+
+		#preview p {
+			color: #aab8d2;
+			line-height: 1.5;
+		}
+
+		@media (max-width: 520px) {
+			.stats {
+				grid-template-columns: repeat(3, 1fr);
+				margin-bottom: 1.25rem;
+			}
+
+			.stat {
+				padding: .55rem .35rem;
+				font-size: .85rem;
+			}
+
+			.stat strong {
+				font-size: 1.25rem;
+			}
+
+			#question {
+				font-size: 1.1rem;
+				margin-top: 1rem;
+			}
+
+			.position {
+				padding: .35rem .1rem;
+			}
+
+			.position label {
+				font-size: .7rem;
+			}
+
+			.bit {
+				padding: .55rem 0;
+				font-size: 1.1rem;
+			}
+
+			button {
+				padding: .75rem 1rem;
+			}
+		}
 	</style>
 </head>
+
 <body>
-<main>
-	<h1>Binary Blitz</h1>
-	<p>Convert each value before the timer runs out!</p>
-	<div class="stats"><div class="stat">Time<strong id="time">60</strong></div>
-		<div class="stat">Score<strong id="score">0</strong></div><div class="stat">Best<strong id="best">0</strong></div>
-		<div class="stat">Level<strong id="level">1</strong></div>
-		<div class="stat">Round<strong id="round">1</strong></div></div>
-	<div id="question">—</div>
-	<div id="worksheet">
-		<div id="positions" aria-label="Binary positional values"></div>
-		<div id="entry-row">
-			<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-			<input id="decimal" type="number" min="0" max="128" aria-label="Decimal answer" placeholder="?">
+	<main>
+		<h1>Binary Blitz</h1>
+		<p>Convert each value before the timer runs out!</p>
+		<div class="stats">
+			<div class="stat">Time<strong id="time">60</strong></div>
+			<div class="stat">Score<strong id="score">0</strong></div>
+			<div class="stat">Best<strong id="best">0</strong></div>
+			<div class="stat">Level<strong id="level">1</strong></div>
+			<div class="stat">Round<strong id="round">1</strong></div>
 		</div>
-	</div>
-	<div><button id="submit">Submit</button><button class="secondary" id="restart">Restart</button></div>
-	<p id="message"></p><p class="hint">You have 60 seconds. Answers are checked instantly.</p>
-</main>
-<script>
-	let value, mode, score = 0, level = 1, round = 1, seconds = 60, playing = true;
-	const $ = id => document.getElementById(id);
-	const graceSeconds = 5;
-	let bestScore = Number(localStorage.getItem('binaryBlitzBestScore')) || 0;
-	const levelMaximums = [15, 31, 63, 128];
-	const positions = [128, 64, 32, 16, 8, 4, 2, 1];
-	$('positions').innerHTML = positions.map((position, index) =>
-		`<div class="position"><label for="bit${index}">${position}</label><button class="bit" id="bit${index}" type="button" aria-label="Bit for ${position}">0</button></div>`
-	).join('');
-	function newRound() {
-		value = Math.floor(Math.random() * (levelMaximums[level - 1] + 1));
-		mode = Math.random() < .5 ? 'decimal-to-binary' : 'binary-to-decimal';
-		const binary = value.toString(2).padStart(8, '0');
-		$('question').textContent = mode === 'decimal-to-binary'
-			? `Convert decimal ${value} to binary:` : 'Convert the binary number to decimal:';
-		positions.forEach((_, index) => {
-			const bit = $(`bit${index}`);
-			bit.textContent = mode === 'binary-to-decimal' ? binary[index] : '0';
-			bit.disabled = mode === 'binary-to-decimal';
-			bit.classList.toggle('locked', mode === 'binary-to-decimal');
-			bit.classList.remove('on');
-		});
-		$('decimal').value = mode === 'decimal-to-binary' ? value : '';
-		$('decimal').readOnly = mode === 'decimal-to-binary';
-		$('level').textContent = level;
-		if (mode === 'decimal-to-binary') $(`bit0`).focus(); else $('decimal').focus();
-		$('round').textContent = round;
-	}
-	function finish(text) { playing = false; clearInterval(timer); $('message').textContent = text;
-		$('question').textContent = 'Game over'; $('decimal').disabled = true; $('submit').disabled = true;
-		positions.forEach((_, index) => { $(`bit${index}`).disabled = true; }); }
-	function submit() {
-		if (!playing) return;
-		const binary = positions.map((_, index) => $(`bit${index}`).textContent).join('');
-		const decimal = $('decimal').value.trim();
-		if (!/^[01]{8}$/.test(binary) && mode === 'decimal-to-binary') { $('message').textContent = 'Enter one 0 or 1 in every bit box.'; return; }
-		if (!/^\d+$/.test(decimal) && mode === 'binary-to-decimal') { $('message').textContent = 'Enter the decimal value in the final box.'; return; }
-		const correct = mode === 'decimal-to-binary' ? parseInt(binary, 2) === value : Number(decimal) === value;
-		if (correct) {
-			score++;
-			seconds += graceSeconds;
-			$('time').textContent = seconds;
-			if (score > bestScore) {
-				bestScore = score;
-				localStorage.setItem('binaryBlitzBestScore', bestScore);
-				$('best').textContent = bestScore;
-			}
-			if (score % 3 === 0 && level < levelMaximums.length) level++;
-			$('message').textContent = score % 3 === 0 && level > 1
-				? `Correct! +${graceSeconds}s. Level ${level} unlocked.` : `Correct! +${graceSeconds} seconds.`;
+		<div id="game" class="preview" aria-hidden="true">
+			<div id="question">—</div>
+			<div id="worksheet">
+				<div id="positions" aria-label="Binary positional values"></div>
+				<div id="entry-row">
+					<input id="decimal" type="number" min="0" max="128" aria-label="Decimal answer" placeholder="?">
+				</div>
+			</div>
+			<div><button id="submit">Submit</button><button class="secondary" id="restart">Restart</button></div>
+			<p id="message"></p>
+			<p class="hint">You have 60 seconds. Answers are checked instantly.</p>
+		</div>
+		<div id="preview">
+			<p>Ready for a 60-second binary and decimal challenge?</p><button id="start">Start game</button>
+		</div>
+	</main>
+	<script>
+		let value, mode, score = 0, level = 1, round = 1, seconds = 60, playing = false;
+		const $ = id => document.getElementById(id);
+		const graceSeconds = 5;
+		let bestScore = Number(localStorage.getItem('binaryBlitzBestScore')) || 0;
+		const levelMaximums = [15, 31, 63, 128];
+		const positions = [128, 64, 32, 16, 8, 4, 2, 1];
+		$('positions').innerHTML = positions.map((position, index) =>
+			`<div class="position"><label for="bit${index}">${position}</label><button class="bit" id="bit${index}" type="button" aria-label="Bit for ${position}">0</button></div>`
+		).join('');
+		function newRound() {
+			value = Math.floor(Math.random() * (levelMaximums[level - 1] + 1));
+			mode = Math.random() < .5 ? 'decimal-to-binary' : 'binary-to-decimal';
+			const binary = value.toString(2).padStart(8, '0');
+			$('question').textContent = mode === 'decimal-to-binary'
+				? `Convert decimal ${value} to binary:` : 'Convert the binary number to decimal:';
+			positions.forEach((_, index) => {
+				const bit = $(`bit${index}`);
+				bit.textContent = mode === 'binary-to-decimal' ? binary[index] : '0';
+				bit.disabled = mode === 'binary-to-decimal';
+				bit.classList.toggle('locked', mode === 'binary-to-decimal');
+				bit.classList.remove('on');
+			});
+			$('decimal').value = mode === 'decimal-to-binary' ? value : '';
+			$('decimal').readOnly = mode === 'decimal-to-binary';
+			$('level').textContent = level;
+			if (mode === 'decimal-to-binary') $(`bit0`).focus(); else $('decimal').focus();
+			$('round').textContent = round;
 		}
-		else { $('message').textContent = `Not quite — ${value} is ${value.toString(2).padStart(8, '0')}.`; }
-		$('score').textContent = score; round++; newRound();
-	}
-	function restart() { score = 0; level = 1; round = 1; seconds = 60; playing = true;
-		$('score').textContent = 0; $('time').textContent = seconds; $('decimal').disabled = false; $('submit').disabled = false;
-		$('best').textContent = bestScore; $('level').textContent = level;
-		$('message').textContent = ''; clearInterval(timer); timer = setInterval(tick, 1000); newRound(); }
-	function tick() { seconds--; $('time').textContent = seconds; if (seconds <= 0) finish(`Time's up! Final score: ${score}`); }
-	$('submit').onclick = submit; $('restart').onclick = restart;
-	$('decimal').onkeydown = e => { if (e.key === 'Enter') submit(); };
-	positions.forEach((_, index) => {
-		$(`bit${index}`).onclick = event => {
-			if (mode !== 'decimal-to-binary') return;
-			const bit = event.currentTarget;
-			bit.textContent = bit.textContent === '0' ? '1' : '0';
-			bit.classList.toggle('on', bit.textContent === '1');
-		};
-	});
-	$('best').textContent = bestScore;
-	let timer; restart();
-</script>
+		function finish(text) {
+			playing = false; clearInterval(timer); $('message').textContent = text;
+			$('question').textContent = 'Game over'; $('decimal').disabled = true; $('submit').disabled = true;
+			positions.forEach((_, index) => { $(`bit${index}`).disabled = true; });
+		}
+		function submit() {
+			if (!playing) return;
+			const binary = positions.map((_, index) => $(`bit${index}`).textContent).join('');
+			const decimal = $('decimal').value.trim();
+			if (!/^[01]{8}$/.test(binary) && mode === 'decimal-to-binary') { $('message').textContent = 'Enter one 0 or 1 in every bit box.'; return; }
+			if (!/^\d+$/.test(decimal) && mode === 'binary-to-decimal') { $('message').textContent = 'Enter the decimal value in the final box.'; return; }
+			const correct = mode === 'decimal-to-binary' ? parseInt(binary, 2) === value : Number(decimal) === value;
+			if (correct) {
+				score++;
+				seconds += graceSeconds;
+				$('time').textContent = seconds;
+				if (score > bestScore) {
+					bestScore = score;
+					localStorage.setItem('binaryBlitzBestScore', bestScore);
+					$('best').textContent = bestScore;
+				}
+				if (score % 3 === 0 && level < levelMaximums.length) level++;
+				$('message').textContent = score % 3 === 0 && level > 1
+					? `Correct! +${graceSeconds}s. Level ${level} unlocked.` : `Correct! +${graceSeconds} seconds.`;
+			}
+			else { $('message').textContent = `Not quite — ${value} is ${value.toString(2).padStart(8, '0')}.`; }
+			$('score').textContent = score; round++; newRound();
+		}
+		function restart() {
+			score = 0; level = 1; round = 1; seconds = 60; playing = true;
+			$('score').textContent = 0; $('time').textContent = seconds; $('decimal').disabled = false; $('submit').disabled = false;
+			$('best').textContent = bestScore; $('level').textContent = level;
+			$('message').textContent = ''; clearInterval(timer); timer = setInterval(tick, 1000); newRound();
+		}
+		function tick() { seconds--; $('time').textContent = seconds; if (seconds <= 0) finish(`Time's up! Final score: ${score}`); }
+		function start() { $('preview').hidden = true; $('game').classList.remove('preview'); $('game').removeAttribute('aria-hidden'); restart(); }
+		$('start').onclick = start; $('submit').onclick = submit; $('restart').onclick = restart;
+		$('decimal').onkeydown = e => { if (e.key === 'Enter') submit(); };
+		positions.forEach((_, index) => {
+			$(`bit${index}`).onclick = event => {
+				if (mode !== 'decimal-to-binary') return;
+				const bit = event.currentTarget;
+				bit.textContent = bit.textContent === '0' ? '1' : '0';
+				bit.classList.toggle('on', bit.textContent === '1');
+			};
+		});
+		$('best').textContent = bestScore;
+		let timer;
+	</script>
 </body>
+
 </html>"""
